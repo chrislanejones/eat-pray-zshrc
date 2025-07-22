@@ -14,7 +14,8 @@ export LANG=en_US.UTF-8
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ ! -f "$ZINIT_HOME/zinit.zsh" ]]; then
   print -P "%F{33}Installing Zinit (%F{220}zdharma-continuum/zinit%F{33})…%f"
-  mkdir -p "$(dirname "$ZINIT_HOME")" && chmod g-rwX "$(dirname "$ZINIT_HOME")"
+  mkdir -p "$(dirname "$ZINIT_HOME")" \
+    && chmod g-rwX "$(dirname "$ZINIT_HOME")"
   git clone https://github.com/zdharma-continuum/zinit "$ZINIT_HOME" \
     && print -P "%F{33}Zinit installed successfully.%f" \
     || print -P "%F{160}Zinit installation failed.%f"
@@ -23,7 +24,7 @@ source "$ZINIT_HOME/zinit.zsh"
 autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
-# Load Zinit annexes correctly
+# Load Zinit annexes
 zinit light-mode for \
   zdharma-continuum/zinit-annex-as-monitor \
   zdharma-continuum/zinit-annex-bin-gem-node \
@@ -33,7 +34,7 @@ zinit light-mode for \
 # 3. History and shell options
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
-SAVEHIST=$HISTIZE
+SAVEHIST=$HISTSIZE
 HISTDUP=erase
 zstyle ':savehist:*' merge yes
 
@@ -45,11 +46,14 @@ setopt EXTENDED_GLOB KSH_GLOB
 setopt INTERACTIVE_COMMENTS
 
 # 4. Completion system setup
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z} m:{a-z}={A-Z}'
+zstyle ':completion:*' matcher-list \
+  'm:{a-z}={A-Za-z} m:{a-z}={A-Z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu select
-zstyle ':fzf-tab:complete:cd:*'     fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:cd:*' \
+  fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' \
+  fzf-preview 'ls --color $realpath'
 
 autoload -Uz compinit compaudit
 compaudit | xargs chmod g-w 2>/dev/null
@@ -67,12 +71,12 @@ bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
-bindkey '^[[1;5D' backward-word   # Ctrl+Left
-bindkey '^[[1;5C' forward-word    # Ctrl+Right
-bindkey '\e[1;3D' backward-word  # Alt+Left
-bindkey '\e[1;3C' forward-word   # Alt+Right
-bindkey '\e\e[D' backward-word   # Alt+Left (alt-escape)
-bindkey '\e\e[C' forward-word    # Alt+Right (alt-escape)
+bindkey '^[[1;5D' backward-word
+bindkey '^[[1;5C' forward-word
+bindkey '\e[1;3D' backward-word
+bindkey '\e[1;3C' forward-word
+bindkey '\e\e[D' backward-word
+bindkey '\e\e[C' forward-word
 bindkey '\eb' backward-word
 bindkey '\ef' forward-word
 
@@ -130,3 +134,12 @@ eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.toml)"
 
 # 10. Tool-specific completions
 [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
+
+# 11. Go language: ensure unique PATH entries and prepend Go bins
+typeset -U path
+path=(
+  /usr/local/go/bin
+  $HOME/go/bin
+  $path[@]
+)
+export PATH="${path[*]}"
