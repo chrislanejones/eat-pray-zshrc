@@ -1,7 +1,7 @@
 # -----------------------------------------------------------------------------
 # Zsh Configuration File (~/.zshrc)
 # Cleaned, Consolidated, and Expanded for Enhanced Productivity
-# Debian Version
+# Fedora Version
 # -----------------------------------------------------------------------------
 
 # 0. Only run in interactive Zsh shells
@@ -123,8 +123,8 @@ alias gp='git push'
 alias gpl='git pull'
 alias gco='git checkout'
 alias gbr='git branch'
-alias update='sudo apt update && sudo apt upgrade -y' # Debian uses apt
-alias upgrade='sudo apt full-upgrade -y' # Debian uses apt
+alias update='sudo dnf update -y' # Fedora uses dnf
+alias upgrade='sudo dnf upgrade -y' # Fedora uses dnf
 alias zreload='source ~/.zshrc'
 alias ezsh='touch ~/.zshrc && vim ~/.zshrc'
 

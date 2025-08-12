@@ -95,6 +95,8 @@ zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
+zinit cdreplay -q
+zinit snippet https://raw.githubusercontent.com/docker/cli/master/contrib/completion/zsh/_docker
 
 # zinit cdreplay (related to history and directory navigation)
 zinit cdreplay -q
@@ -112,74 +114,59 @@ bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 
 # Word movement keybindings
-# These are the standard sequences; test them to ensure your terminal sends them.
-# If they don't work, use `cat -v` to find the exact sequences your terminal sends.
-
-# Ctrl+Left/Right Arrow (often works, test in your terminal)
 bindkey '^[[1;5D' backward-word # Ctrl+Left Arrow
 bindkey '^[[1;5C' forward-word  # Ctrl+Right Arrow
+bindkey '\e[1;3D' backward-word # Alt+Left Arrow
+bindkey '\e[1;3C' forward-word  # Alt+Right Arrow
+bindkey '\eb' backward-word     # Alt+b (Emacs-style)
+bindkey '\ef' forward-word      # Alt+f (Emacs-style)
 
-# Alt+Left/Right Arrow (more common for word movement, often preferred)
-# These sequences can vary by terminal, try all if one doesn't work.
-bindkey '\e[1;3D' backward-word # Alt+Left Arrow (common for some terminals)
-bindkey '\e[1;3C' forward-word  # Alt+Right Arrow (common for some terminals)
-bindkey '\e\e[D' backward-word  # Alternative Alt+Left Arrow sequence (often works well)
-bindkey '\e\e[C' forward-word   # Alternative Alt+Right Arrow sequence (often works well)
-bindkey '\eb' backward-word     # Alt+b (Emacs-style, almost universally works)
-bindkey '\ef' forward-word      # Alt+f (Emacs-style, almost universally works)
+# Home and End keybindings
+bindkey '^[[H' beginning-of-line # Home key
+bindkey '^[[F' end-of-line       # End key
 
 # 7. Aliases (Productivity and Convenience)
 # -----------------------------------------------------------------------------
-# General Shortcuts
 alias cls='clear'
 alias ll='ls -alF'
 alias la='ls -A'
-alias l='ls -CF' # Compact, formatted list
+alias l='ls -CF'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
-alias .....='cd ../../../..' # You can extend these as needed!
-alias less='less -R' # Raw control characters (for colored output)
-alias cp='cp -iv'    # Interactive, verbose copy
-alias mv='mv -iv'    # Interactive, verbose move
-alias rm='rm -i'     # Interactive remove (prompts before deletion) - use with caution!
-                     # Some users prefer to alias 'rm' to 'rm -rf' or not at all for speed.
-alias grep='grep --color=auto' # Highlight grep matches
-alias df='df -h'     # Human-readable disk space
-alias du='du -sh'    # Summarized, human-readable disk usage
-alias free='free -h' # Human-readable memory usage
-alias mkdir='mkdir -pv' # Create parent directories if needed, verbose output
+alias .....='cd ../../../..'
+alias less='less -R'
+alias cp='cp -iv'
+alias mv='mv -iv'
+alias rm='rm -i'
+alias grep='grep --color=auto'
+alias df='df -h'
+alias du='du -sh'
+alias free='free -h'
+alias mkdir='mkdir -pv'
 
-# Git Aliases (if you use Git frequently)
-alias gs='git status -sb' # Git status (short branch)
-alias ga='git add .'      # Git add all changes
-alias gc='git commit -v'  # Git commit with verbose output
-alias gd='git diff'       # Git diff
-alias gl='git log --oneline --decorate --graph' # Git log (compact, graph)
-alias gp='git push'       # Git push
-alias gpl='git pull'      # Git pull
-alias gco='git checkout'  # Git checkout
-alias gbr='git branch'    # Git branch
+# Git Aliases
+alias gs='git status -sb'
+alias ga='git add .'
+alias gc='git commit -v'
+alias gd='git diff'
+alias gl='git log --oneline --decorate --graph'
+alias gp='git push'
+alias gpl='git pull'
+alias gco='git checkout'
+alias gbr='git branch'
 
-# System Update (Adjust based on your Arch package manager)
-alias update='sudo pacman -Syu' # For Arch Linux
-
-# Zsh config reload (useful after editing .zshrc)
+# System Update
+alias update='sudo pacman -Syu'
 alias zreload='source ~/.zshrc'
-
-# Alias for quick editing of .zshrc
 alias ezsh='touch ~/.zshrc && vim ~/.zshrc'
 
-
-# 8. Functions (More Advanced Customizations)
+# 8. Functions
 # -----------------------------------------------------------------------------
-# Create a directory and change into it
 mkcd() {
     mkdir -p "$1" && cd "$1"
 }
 
-# Make a script executable and run it, respecting its shebang.
-# Passes all arguments to the script.
 xrun() {
     if [ -f "$1" ]; then
         chmod +x "$1" && "$@"
@@ -189,7 +176,6 @@ xrun() {
     fi
 }
 
-# Touch a new file(s) and then open the first one in Vim.
 tnv() {
     if [ -z "$1" ]; then
         echo "Usage: tnv <file1> [file2...]"
@@ -199,11 +185,9 @@ tnv() {
 }
 
 # 9. Prompt (Oh My Posh)
-# Loaded late as it primarily affects the visual prompt.
 # -----------------------------------------------------------------------------
-eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.toml)"
+eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.yaml)"
 
-# 10. Tool-Specific Sourcing (e.g., bun completions)
+# 10. Tool-Specific Sourcing
 # -----------------------------------------------------------------------------
-# Bun shell completions (only if the file exists and is readable)
 [ -s "/home/clj/.bun/_bun" ] && source "/home/clj/.bun/_bun"
