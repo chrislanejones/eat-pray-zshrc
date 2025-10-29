@@ -1,4 +1,4 @@
-![Eat Pray ZSH book Cover](EatPrayZSH.jpg)
+![Eat Pray ZSH book Cover](EatPrayZSH.webp)
 
 # My Zsh Configuration (`.zshrc`)
 
@@ -18,6 +18,7 @@ I plan to change this a lot. This file contains my personal Zsh shell configurat
 - **Custom Functions:**
   - `mkcd`: Creates a directory and immediately changes into it.
   - `xrun`: Makes a script executable (`chmod +x`) and then runs it, respecting the script's shebang line and passing all arguments.
+  - `TC`: Title Case converter - transforms input text to title case, properly handling common articles and prepositions.
 - **Enhanced History Management:** Settings to improve command history, preventing duplicates and ensuring better recall.
 - **Zsh Options (`setopt`):** Various Zsh options are enabled for improved globbing, directory navigation, and general shell behavior.
 - **Oh My Posh Integration:** Configured to load a custom prompt theme using [Oh My Posh](https://ohmyposh.dev/).

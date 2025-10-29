@@ -8,7 +8,7 @@
 # >>> managed by chatgpt (Debian zig & xrun) >>>
 # Debian-friendly PATH setup (no duplicates). Includes common script locations
 # so your separate 'xrun' script is discoverable and not shadowed.
-for d in /usr/local/zig "$HOME/.local/bin" "$HOME/bin" /usr/local/bin; do
+for d in "$HOME/zig-linux-x86_64-0.13.0" "$HOME/.local/bin" "$HOME/bin" /usr/local/bin; do
   case ":$PATH:" in
     *":$d:"*) ;;
     *) PATH="$d:$PATH" ;;
@@ -134,6 +134,18 @@ alias upgrade='sudo apt full-upgrade -y'
 alias zreload='source ~/.zshrc'
 alias ezsh='touch ~/.zshrc && vim ~/.zshrc'
 alias flat="flatten"
+alias TC="awk -v IGNORECASE=1 '{
+  n = split(\$0, w, \" \")
+  for (i = 1; i <= n; i++) {
+    lw = tolower(w[i])
+    if (i != 1 && i != n && (lw == \"and\" || lw == \"or\" || lw == \"the\" || lw == \"a\" || lw == \"an\" || lw == \"of\" || lw == \"in\" || lw == \"on\" || lw == \"to\" || lw == \"for\" || lw == \"with\" || lw == \"at\" || lw == \"by\")) {
+      w[i] = lw
+    } else {
+      w[i] = toupper(substr(w[i],1,1)) tolower(substr(w[i],2))
+    }
+  }
+  for (i = 1; i <= n; i++) printf \"%s%s\", w[i], (i < n ? \" \" : \"\\n\")
+}'"
 
 # 8. Functions
 mkcd() {

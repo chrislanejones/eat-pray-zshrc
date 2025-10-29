@@ -160,6 +160,18 @@ alias gbr='git branch'
 alias update='sudo pacman -Syu'
 alias zreload='source ~/.zshrc'
 alias ezsh='touch ~/.zshrc && vim ~/.zshrc'
+alias TC="awk -v IGNORECASE=1 '{
+  n = split(\$0, w, \" \")
+  for (i = 1; i <= n; i++) {
+    lw = tolower(w[i])
+    if (i != 1 && i != n && (lw == \"and\" || lw == \"or\" || lw == \"the\" || lw == \"a\" || lw == \"an\" || lw == \"of\" || lw == \"in\" || lw == \"on\" || lw == \"to\" || lw == \"for\" || lw == \"with\" || lw == \"at\" || lw == \"by\")) {
+      w[i] = lw
+    } else {
+      w[i] = toupper(substr(w[i],1,1)) tolower(substr(w[i],2))
+    }
+  }
+  for (i = 1; i <= n; i++) printf \"%s%s\", w[i], (i < n ? \" \" : \"\\n\")
+}'"
 
 # 8. Functions
 # -----------------------------------------------------------------------------
