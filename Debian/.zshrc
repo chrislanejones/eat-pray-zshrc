@@ -134,23 +134,15 @@ alias upgrade='sudo apt full-upgrade -y'
 alias zreload='source ~/.zshrc'
 alias ezsh='touch ~/.zshrc && vim ~/.zshrc'
 alias flat="flatten"
-alias TC="awk -v IGNORECASE=1 '{
-  n = split(\$0, w, \" \")
-  for (i = 1; i <= n; i++) {
-    lw = tolower(w[i])
-    if (i != 1 && i != n && (lw == \"and\" || lw == \"or\" || lw == \"the\" || lw == \"a\" || lw == \"an\" || lw == \"of\" || lw == \"in\" || lw == \"on\" || lw == \"to\" || lw == \"for\" || lw == \"with\" || lw == \"at\" || lw == \"by\")) {
-      w[i] = lw
-    } else {
-      w[i] = toupper(substr(w[i],1,1)) tolower(substr(w[i],2))
-    }
-  }
-  for (i = 1; i <= n; i++) printf \"%s%s\", w[i], (i < n ? \" \" : \"\\n\")
-}'"
+
+# Title Case alias (backed by function below)
+alias TC='_TC'
 
 # 8. Functions
 mkcd() {
   mkdir -p "$1" && cd "$1"
 }
+
 xrun() {
   if [[ -f "$1" ]]; then
     chmod +x "$1" && "$@"
@@ -159,9 +151,32 @@ xrun() {
     return 1
   fi
 }
+
 tnv() {
   [[ -z "$1" ]] && { echo "Usage: tnv <file1> [file2...]"; return 1; }
   touch "$@" && vim "$1"
+}
+
+# Title Case function (internal)
+_TC() {
+  awk -v IGNORECASE=1 '{
+    n = split($0, w, " ")
+    for (i = 1; i <= n; i++) {
+      lw = tolower(w[i])
+      if (i != 1 && i != n &&
+          (lw == "and" || lw == "or" || lw == "the" || lw == "a" ||
+           lw == "an" || lw == "of" || lw == "in" || lw == "on" ||
+           lw == "to" || lw == "for" || lw == "with" || lw == "at" ||
+           lw == "by")) {
+        w[i] = lw
+      } else {
+        w[i] = toupper(substr(w[i],1,1)) tolower(substr(w[i],2))
+      }
+    }
+    for (i = 1; i <= n; i++) {
+      printf "%s%s", w[i], (i < n ? " " : "\n")
+    }
+  }'
 }
 
 # 9. Prompt (Oh My Posh)
@@ -200,7 +215,7 @@ flatten() {
   fi
 
   echo "Flattening: moving all contents from '$inner' → '$target' ..."
-  
+
   if command -v shopt >/dev/null 2>&1; then
     shopt -s dotglob nullglob
   else
@@ -217,4 +232,3 @@ flatten() {
     return 1
   fi
 }
-
