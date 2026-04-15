@@ -29,8 +29,8 @@ compinit -C
 # 1. Locale & Editor
 # -------------------------------------------------
 export LANG=en_US.UTF-8
-export EDITOR='vim'
-export VISUAL='vim'
+export EDITOR='cursor --wait'
+export VISUAL='cursor --wait'
 
 # -------------------------------------------------
 # 2. Tool Locations
@@ -141,6 +141,10 @@ alias cat='batcat --paging=never'
 alias cls='clear'
 alias zreload='source ~/.zshrc'
 alias update='sudo apt update && sudo apt upgrade -y'
+alias cursor='"/mnt/c/Program Files/cursor/resources/app/bin/cursor"'
+alias open='explorer.exe .'
+alias rmzone='find . -name "*:Zone.Identifier" -type f -delete'
+alias x='/mnt/c/Windows/explorer.exe .'
 
 # Git
 alias gs='git status -sb'
@@ -153,6 +157,7 @@ alias gp='git push'
 # -------------------------------------------------
 mkcd() { mkdir -p "$1" && cd "$1"; }
 save() { git add .; git commit -m "$1"; git push; }
+browse() { /mnt/c/Windows/System32/rundll32.exe url.dll,FileProtocolHandler "$1"; }
 
 _TC() {
   awk -v IGNORECASE=1 '{

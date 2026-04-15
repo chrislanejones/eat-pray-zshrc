@@ -1,16 +1,16 @@
 # ==============================================================================
-# ~/.zshrc — Debian (WSL) Pro Edition
+# ~/.zshrc — Fedora (WSL) Edition
 # ==============================================================================
 # PREREQUISITES (Run these to make this config work):
 #
 # 1. System Tools:
-#    sudo apt update && sudo apt install zoxide eza bat fzf direnv curl git -y
+#    sudo dnf install zoxide eza bat fzf direnv curl git -y
 #
 # 2. FNM (Node): curl -fsSL https://fnm.vercel.app/install | bash
 # 3. Oh My Posh: curl -s https://ohmyposh.dev/install.sh | bash -s
 # 4. Bun: curl -fsSL https://bun.sh/install | bash
 # 5. Rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-# 6. Go: Manual install to /usr/local/go (as performed earlier)
+# 6. Go: sudo dnf install golang -y
 # 7. Zig: Extract to ~/zig-linux-x86_64-0.13.0
 # ==============================================================================
 
@@ -29,13 +29,12 @@ compinit -C
 # 1. Locale & Editor
 # -------------------------------------------------
 export LANG=en_US.UTF-8
-export EDITOR='vim'
-export VISUAL='vim'
+export EDITOR='cursor --wait'
+export VISUAL='cursor --wait'
 
 # -------------------------------------------------
 # 2. Tool Locations
 # -------------------------------------------------
-export GOROOT="/usr/local/go"
 export GOPATH="$HOME/go"
 export CARGO_HOME="$HOME/.cargo"
 export BUN_INSTALL="$HOME/.bun"
@@ -51,7 +50,7 @@ path=(
   "$HOME/.local/bin"
   "$HOME/bin"
   "$HOME/.fnm"
-  "$GOROOT/bin"
+  /usr/lib/golang/bin
   "$GOPATH/bin"
   "$CARGO_HOME/bin"
   "$ZIG_PATH"
@@ -62,6 +61,7 @@ path=(
   /bin
 )
 export PATH
+
 # -------------------------------------------------
 # 4. Zinit Plugin Manager
 # -------------------------------------------------
@@ -135,12 +135,16 @@ alias ls='eza --icons --git'
 alias l='ls -la'
 alias ll='eza -alF --icons --git'
 alias lt='eza --tree --level=2 --icons'
-alias cat='batcat --paging=never'
+alias cat='bat --paging=never'
 
 # Utilities
 alias cls='clear'
 alias zreload='source ~/.zshrc'
-alias update='sudo apt update && sudo apt upgrade -y'
+alias update='sudo dnf upgrade --refresh'
+alias cursor='"/mnt/c/Program Files/cursor/resources/app/bin/cursor"'
+alias open='explorer.exe .'
+alias rmzone='find . -name "*:Zone.Identifier" -type f -delete'
+alias x='/mnt/c/Windows/explorer.exe .'
 
 # Git
 alias gs='git status -sb'
@@ -153,6 +157,7 @@ alias gp='git push'
 # -------------------------------------------------
 mkcd() { mkdir -p "$1" && cd "$1"; }
 save() { git add .; git commit -m "$1"; git push; }
+browse() { /mnt/c/Windows/System32/rundll32.exe url.dll,FileProtocolHandler "$1"; }
 
 _TC() {
   awk -v IGNORECASE=1 '{
@@ -182,22 +187,15 @@ alias flat='flatten'
 
 pullscript() {
   local SCRIPT_DIR="$HOME/scripts"
-
-  # Ensure the scripts directory exists
   if [[ ! -d "$SCRIPT_DIR" ]]; then
     echo "Error: $SCRIPT_DIR not found."
     return 1
   fi
-
-  # Use fzf to select the file
-  # Includes a preview window using batcat (aliased as cat in your config)
   local selected_file=$(ls "$SCRIPT_DIR" | fzf \
     --prompt="Select script to pull > " \
     --height=40% \
     --reverse \
-    --preview "batcat --color=always --style=numbers $SCRIPT_DIR/{}")
-
-  # If a file was selected (didn't press ESC)
+    --preview "bat --color=always --style=numbers $SCRIPT_DIR/{}")
   if [[ -n "$selected_file" ]]; then
     cp "$SCRIPT_DIR/$selected_file" .
     chmod +x "$selected_file"
@@ -205,7 +203,7 @@ pullscript() {
   else
     echo "No script selected."
   fi
-  }
+}
 
 roll() {
   local target_dir="${1:-.}"
@@ -217,12 +215,9 @@ roll() {
 # -------------------------------------------------
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.json)"
 [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
-export GOROOT=/usr/lib/go-1.24
-export GOROOT=/usr/lib/go-1.24
-
-# bun completions
-[ -s "/home/clj/.bun/_bun" ] && source "/home/clj/.bun/_bun"
 
 . "$HOME/.atuin/bin/env"
+eval "$(atuin init zsh)"
 
+. "$HOME/.atuin/bin/env"
 eval "$(atuin init zsh)"
