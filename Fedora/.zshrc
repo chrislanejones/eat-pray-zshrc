@@ -11,7 +11,7 @@
 # 4. Bun: curl -fsSL https://bun.sh/install | bash
 # 5. Rust: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 # 6. Go: sudo dnf install golang -y
-# 7. Zig: Extract to ~/zig-linux-x86_64-0.13.0
+# 7. Atuin (history sync): curl --proto '=https' --tlsv1.2 -LsSf https://setup.atuin.sh | sh
 # ==============================================================================
 
 # -------------------------------------------------
@@ -20,10 +20,13 @@
 [[ -z "$ZSH_VERSION" || $- != *i* ]] && return
 
 autoload -Uz compinit
-for dump in "${ZDOTDIR:-$HOME}/.zcompdump"(N.mh+24); do
+_zdump=("${ZDOTDIR:-$HOME}/.zcompdump"(N.mh+24))
+if (( $#_zdump )); then
   compinit
-done
-compinit -C
+else
+  compinit -C
+fi
+unset _zdump
 
 # -------------------------------------------------
 # 1. Locale & Editor
@@ -40,7 +43,6 @@ export CARGO_HOME="$HOME/.cargo"
 export BUN_INSTALL="$HOME/.bun"
 export PNPM_HOME="$HOME/.local/share/pnpm"
 export FNM_DIR="$HOME/.fnm"
-export ZIG_PATH="$HOME/zig-linux-x86_64-0.13.0"
 
 # -------------------------------------------------
 # 3. PATH (Single Source of Truth)
@@ -53,7 +55,6 @@ path=(
   /usr/lib/golang/bin
   "$GOPATH/bin"
   "$CARGO_HOME/bin"
-  "$ZIG_PATH"
   "$BUN_INSTALL/bin"
   "$PNPM_HOME"
   /usr/local/bin
@@ -152,7 +153,7 @@ alias gp='git push'
 # 11. Functions
 # -------------------------------------------------
 mkcd() { mkdir -p "$1" && cd "$1"; }
-save() { git add .; git commit -m "$1"; git push; }
+save() { [ -n "$1" ] || { echo "usage: save <msg>"; return 1; }; git add . && git commit -m "$1" && git push; }
 
 _TC() {
   awk -v IGNORECASE=1 '{
@@ -169,14 +170,15 @@ _TC() {
 alias TC='_TC'
 
 flatten() {
-  local root="${1:-.}"
+  local root="${1:-.}" dir parent
   [[ ! -d "$root" ]] && return 1
-  find "$root" -type d -mindepth 2 | sort -r | while read -r dir; do
+  setopt local_options glob_dots
+  while IFS= read -r dir; do
     parent="$(dirname "$dir")"
     [[ "$(ls -A "$parent" | wc -l)" -gt 1 ]] && continue
     mv -i "$dir"/* "$parent"/ 2>/dev/null
     rmdir "$dir" 2>/dev/null
-  done
+  done < <(find "$root" -mindepth 2 -type d | sort -r)
 }
 alias flat='flatten'
 
@@ -211,8 +213,5 @@ roll() {
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.json)"
 [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
-. "$HOME/.atuin/bin/env"
-eval "$(atuin init zsh)"
-
-. "$HOME/.atuin/bin/env"
+[ -f "$HOME/.atuin/bin/env" ] && . "$HOME/.atuin/bin/env"
 eval "$(atuin init zsh)"

@@ -1,0 +1,24 @@
+# Editor swap / undo / backup files
+*.swp
+*.sw?
+*.un~
+*~
+.*.swp
+
+# Claude Code / local tooling
+.claude/
+**/settings.local.json
+
+# Secrets / env (defense in depth — this repo should never contain these)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.local
+
+# OS cruft
+.DS_Store
+Thumbs.db
+*:Zone.Identifier
