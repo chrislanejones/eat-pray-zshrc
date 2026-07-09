@@ -213,7 +213,25 @@ roll() {
 }
 
 # -------------------------------------------------
-# 12. Prompt & Tool Completions
+# 12. Vim → Windows Clipboard
+# -------------------------------------------------
+# Distro vim builds ship without +clipboard, so "+y can't reach Windows.
+# Install a TextYankPost hook into ~/.vimrc (once) that pipes every yank
+# to clip.exe.
+if [[ -x /mnt/c/Windows/System32/clip.exe ]] && ! grep -sq 'WSLYank' ~/.vimrc; then
+  cat >> ~/.vimrc <<'EOF'
+" Yank straight to the Windows clipboard on WSL (vim ships -clipboard)
+if executable('/mnt/c/Windows/System32/clip.exe')
+  augroup WSLYank
+    autocmd!
+    autocmd TextYankPost * if v:event.operator ==# 'y' | call system('/mnt/c/Windows/System32/clip.exe', @") | endif
+  augroup END
+endif
+EOF
+fi
+
+# -------------------------------------------------
+# 13. Prompt & Tool Completions
 # -------------------------------------------------
 eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.json)"
 [ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
